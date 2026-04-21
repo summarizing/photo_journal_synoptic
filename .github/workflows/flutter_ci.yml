@@ -1,0 +1,51 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up the Flutter SDK
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+
+      # Step 3: Install project dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Step 4: Check for any code formatting issues
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      # Step 5: Run static analysis (catches errors before runtime)
+      - name: Analyse project
+        run: flutter analyze
+
+      # Step 6: Run unit tests
+      - name: Run tests
+        run: flutter test
+
+      # Step 7: Build a release APK for Android
+      - name: Build Android APK
+        run: flutter build apk --release --no-tree-shake-icons
+
+      # Step 8: Upload the APK as a build artifact
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
