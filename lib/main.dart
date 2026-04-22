@@ -9,6 +9,7 @@ import 'providers/journal_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/gallery_screen.dart';
 import 'services/analytics_service.dart';
+import 'firebase_options.dart';
 
 // Keeping this global so home_screen can access it without passing it down
 // through constructors. Could use a service locator but this is fine for now.
@@ -24,9 +25,11 @@ void main() async {
   // Firebase init - will throw if google-services.json isn't added yet,
   // so wrapping in try/catch during development
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   } catch (e) {
-    debugPrint('Firebase not configured yet: $e');
+    debugPrint('Firebase error: $e');
   }
 
   runApp(
